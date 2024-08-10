@@ -16,6 +16,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
 import java.awt.Cursor;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class App {
 
@@ -155,6 +156,20 @@ public class App {
 		layeredPane.add(excluirBtnNewButton);
 		
 		dataTable = new JTable();
+		dataTable.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+			},
+			new String[] {
+				"Hora Sa\u00EDda", "Hora Entrada", "Cor", "Id", "Placa", "Marca"
+			}
+		));
+		dataTable.getColumnModel().getColumn(0).setPreferredWidth(105);
+		dataTable.getColumnModel().getColumn(1).setPreferredWidth(98);
 		dataTable.setBounds(12, 120, 1246, 523);
 		layeredPane.add(dataTable);
 	}
