@@ -1,21 +1,26 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Toolkit;
-
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import java.awt.BorderLayout;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.JLabel;
-import java.awt.Cursor;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import impl.CarroDaoImpl;
+import model.Carro;
 
 public class App {
 
@@ -45,10 +50,12 @@ public class App {
 
 	/**
 	 * Create the application.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public App() {
+	public App() throws ClassNotFoundException, SQLException {
 		initialize();
-		
+
 		// Coloca um ícone costumizado para a aplicação
 		Image img = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/assets/logo.png"));
 		frame.setIconImage(img);
@@ -56,8 +63,10 @@ public class App {
 
 	/**
 	 * Initialize the contents of the frame.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	private void initialize() {
+	private void initialize() throws ClassNotFoundException, SQLException {
 		try {
 
 			// Obtem o nome do SO e ajusta o tema para um melhor look and feel
@@ -153,23 +162,32 @@ public class App {
 		excluirBtnNewButton.setToolTipText("Excluir um veículo");
 		excluirBtnNewButton.setBounds(264, 83, 117, 25);
 		layeredPane.add(excluirBtnNewButton);
-		
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(12, 120, 1246, 523);
+		layeredPane.add(scrollPane);
+
 		dataTable = new JTable();
-		dataTable.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null, null},
-				{null, null, null, null, null, null},
-				{null, null, null, null, null, null},
-				{null, null, null, null, null, null},
-				{null, null, null, null, null, null},
-			},
-			new String[] {
-				"Hora Sa\u00EDda", "Hora Entrada", "Cor", "Id", "Placa", "Marca"
-			}
-		));
+		scrollPane.setViewportView(dataTable);
+		dataTable.setModel(new DefaultTableModel(new Object[][] {},
+				new String[] { "Id", "Marca", "Cor", "Placa", "Hora Entrada", "Hora Saída" }));
 		dataTable.getColumnModel().getColumn(0).setPreferredWidth(105);
 		dataTable.getColumnModel().getColumn(1).setPreferredWidth(98);
-		dataTable.setBounds(12, 120, 1246, 523);
-		layeredPane.add(dataTable);
+		
+		loadInitialData();
+	}
+	
+	public void loadInitialData() throws ClassNotFoundException, SQLException {
+		DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
+		tableModel.setRowCount(0); 
+
+		CarroDaoImpl carroDao = new CarroDaoImpl();
+		List<Carro> carros = carroDao.getAllCarros();
+
+		for (Carro carro : carros) {
+			Object[] rowData = { carro.getId(), carro.getMarca(), carro.getCor(), carro.getPlaca(),
+					carro.getHoraEntrada(), carro.getHoraSaida() };
+			tableModel.addRow(rowData);
+		}
 	}
 }
