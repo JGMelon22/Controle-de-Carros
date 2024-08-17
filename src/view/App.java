@@ -8,7 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import java.awt.BorderLayout;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
