@@ -240,7 +240,8 @@ public class App {
 					tableModel.addRow(rowData);
 				}
 			} catch (Exception e) {
-				// TODO: handle exception
+				JOptionPane.showMessageDialog(frmControleDeEstacionamento, "Algo de errado ocorreu!",
+						"Mensagem de erro", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 

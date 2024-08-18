@@ -1,15 +1,12 @@
 package impl;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 
 import connection.ConnectionFactory;
 import dao.CarroDao;
@@ -47,17 +44,43 @@ public class CarroDaoImpl implements CarroDao {
 	}
 
 	@Override
-	public Carro getCarro(int id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Carro getCarro(String placa) {
+		Carro carro = new Carro();
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM Carros WHERE Placa = ?");
+			preparedStatement.setString(1, placa);
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				carro.setId(resultSet.getInt("id"));
+				carro.setMarca(resultSet.getString("Marca"));
+				carro.setCor(resultSet.getString("Cor"));
+				carro.setHoraEntrada(resultSet.getInt("HoraEntrada"));
+				carro.setHoraSaida(resultSet.getInt("HoraSaida"));
+
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return carro;
 	}
 
 	@Override
 	public void updateCarro(Carro carro) {
-		// TODO Auto-generated method stub
-
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement(
+					"UPDATE [Carros] SET [Marca] = ?, [Placa]= ?, [Cor] = ?, [HoraEntrada] = ?, [HoraSaida] = ? WHERE [Placa] = ?");
+			preparedStatement.setString(1, carro.getMarca());
+			preparedStatement.setString(2, carro.getCor());
+			preparedStatement.setInt(3, carro.getHoraEntrada());
+			preparedStatement.setInt(4, carro.getHoraSaida());
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	@Override
 	public void deleteCarro(Carro carro) {
 		try {
@@ -66,7 +89,7 @@ public class CarroDaoImpl implements CarroDao {
 			preparedStatement.executeUpdate();
 
 		} catch (SQLException e) {
-				e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 
