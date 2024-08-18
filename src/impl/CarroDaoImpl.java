@@ -2,6 +2,7 @@ package impl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -56,11 +57,17 @@ public class CarroDaoImpl implements CarroDao {
 		// TODO Auto-generated method stub
 
 	}
-
+	
 	@Override
 	public void deleteCarro(Carro carro) {
-		// TODO Auto-generated method stub
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement("DELETE FROM Carros WHERE Placa = ?");
+			preparedStatement.setString(1, carro.getPlaca());
+			preparedStatement.executeUpdate();
 
+		} catch (SQLException e) {
+				e.printStackTrace();
+		}
 	}
 
 }

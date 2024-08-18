@@ -16,6 +16,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -25,6 +26,8 @@ import javax.swing.table.DefaultTableModel;
 
 import impl.CarroDaoImpl;
 import model.Carro;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class App {
 
@@ -136,6 +139,27 @@ public class App {
 		layeredPane.add(atualizarBtnNewButton);
 
 		JButton excluirBtnNewButton = new JButton("Excluir");
+		excluirBtnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (dataTable.getSelectedRow() != -1) {
+					try {
+						Carro carro = new Carro();
+						CarroDaoImpl carroDao = new CarroDaoImpl();
+						carro.setPlaca(((String) dataTable.getValueAt(dataTable.getSelectedRow(), 3)));
+						carroDao.deleteCarro(carro);
+
+						JOptionPane.showMessageDialog(frmControleDeEstacionamento,
+								"Carro com a placa " + carro.getPlaca() + " foi apagado com sucesso!",
+								"Mensagem de aviso", JOptionPane.INFORMATION_MESSAGE);
+
+						loadInitialData();
+
+					} catch (ClassNotFoundException | SQLException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		excluirBtnNewButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		excluirBtnNewButton.setToolTipText("Excluir um veículo");
 		excluirBtnNewButton.setBounds(264, 83, 117, 25);
@@ -201,17 +225,25 @@ public class App {
 		loadInitialData();
 	}
 
-	public void loadInitialData() throws ClassNotFoundException, SQLException {
-		DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
-		tableModel.setRowCount(0);
+	public void loadInitialData() {
+		Thread t1 = new Thread(() -> {
+			DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
+			tableModel.setRowCount(0);
 
-		CarroDaoImpl carroDao = new CarroDaoImpl();
-		List<Carro> carros = carroDao.getAllCarros();
+			try {
+				CarroDaoImpl carroDao = new CarroDaoImpl();
+				List<Carro> carros = carroDao.getAllCarros();
 
-		for (Carro carro : carros) {
-			Object[] rowData = { carro.getId(), carro.getMarca(), carro.getCor(), carro.getPlaca(),
-					carro.getHoraEntrada(), carro.getHoraSaida() };
-			tableModel.addRow(rowData);
-		}
+				for (Carro carro : carros) {
+					Object[] rowData = { carro.getId(), carro.getMarca(), carro.getCor(), carro.getPlaca(),
+							carro.getHoraEntrada(), carro.getHoraSaida() };
+					tableModel.addRow(rowData);
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		});
+
+		t1.start();
 	}
 }
