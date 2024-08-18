@@ -3,20 +3,24 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
 import impl.CarroDaoImpl;
@@ -24,12 +28,7 @@ import model.Carro;
 
 public class App {
 
-	private JFrame frame;
-	private JTextField marcaTextField;
-	private JTextField placaTextField;
-	private JTextField corTextField;
-	private JTextField horaEntradaTextField;
-	private JTextField horaSaidaTextField;
+	private JFrame frmControleDeEstacionamento;
 	private JTable dataTable;
 
 	/**
@@ -37,10 +36,11 @@ public class App {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					App window = new App();
-					window.frame.setVisible(true);
+					window.frmControleDeEstacionamento.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -50,21 +50,23 @@ public class App {
 
 	/**
 	 * Create the application.
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
+	 *
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
 	 */
 	public App() throws ClassNotFoundException, SQLException {
 		initialize();
 
 		// Coloca um ícone costumizado para a aplicação
 		Image img = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/assets/logo.png"));
-		frame.setIconImage(img);
+		frmControleDeEstacionamento.setIconImage(img);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
+	 *
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
 	 */
 	private void initialize() throws ClassNotFoundException, SQLException {
 		try {
@@ -90,40 +92,16 @@ public class App {
 			e.printStackTrace();
 		}
 
-		frame = new JFrame();
-		frame.setBounds(100, 100, 1280, 720);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmControleDeEstacionamento = new JFrame();
+		frmControleDeEstacionamento.setTitle("Controle de Estacionamento");
+		frmControleDeEstacionamento.setBounds(100, 100, 1280, 720);
+		frmControleDeEstacionamento.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		frame.setResizable(false);
-		frame.setLocationRelativeTo(null);
+		frmControleDeEstacionamento.setResizable(false);
+		frmControleDeEstacionamento.setLocationRelativeTo(null);
 
 		JLayeredPane layeredPane = new JLayeredPane();
-		frame.getContentPane().add(layeredPane, BorderLayout.CENTER);
-
-		marcaTextField = new JTextField();
-		marcaTextField.setBounds(12, 27, 114, 19);
-		layeredPane.add(marcaTextField);
-		marcaTextField.setColumns(10);
-
-		placaTextField = new JTextField();
-		placaTextField.setColumns(10);
-		placaTextField.setBounds(138, 27, 114, 19);
-		layeredPane.add(placaTextField);
-
-		corTextField = new JTextField();
-		corTextField.setColumns(10);
-		corTextField.setBounds(264, 27, 114, 19);
-		layeredPane.add(corTextField);
-
-		horaEntradaTextField = new JTextField();
-		horaEntradaTextField.setColumns(10);
-		horaEntradaTextField.setBounds(385, 27, 114, 19);
-		layeredPane.add(horaEntradaTextField);
-
-		horaSaidaTextField = new JTextField();
-		horaSaidaTextField.setColumns(10);
-		horaSaidaTextField.setBounds(511, 28, 114, 19);
-		layeredPane.add(horaSaidaTextField);
+		frmControleDeEstacionamento.getContentPane().add(layeredPane, BorderLayout.CENTER);
 
 		JLabel lblNewLabel = new JLabel("Marca");
 		lblNewLabel.setBounds(12, 12, 70, 15);
@@ -171,15 +149,61 @@ public class App {
 		scrollPane.setViewportView(dataTable);
 		dataTable.setModel(new DefaultTableModel(new Object[][] {},
 				new String[] { "Id", "Marca", "Cor", "Placa", "Hora Entrada", "Hora Saída" }));
+
+		JFormattedTextField marcaFormattedTextField = new JFormattedTextField();
+
+		marcaFormattedTextField.setFont(new Font("DejaVu Sans", Font.PLAIN, 14));
+		marcaFormattedTextField.setBounds(12, 31, 104, 27);
+		layeredPane.add(marcaFormattedTextField);
+
+		JFormattedTextField placaFormattedTextField = new JFormattedTextField();
+		placaFormattedTextField.setFont(new Font("DejaVu Sans", Font.PLAIN, 14));
+		placaFormattedTextField.setBounds(138, 31, 104, 27);
+		layeredPane.add(placaFormattedTextField);
+
+		JFormattedTextField corFormattedTextField = new JFormattedTextField();
+		corFormattedTextField.setFont(new Font("DejaVu Sans", Font.PLAIN, 14));
+		corFormattedTextField.setBounds(264, 31, 104, 27);
+		layeredPane.add(corFormattedTextField);
+
+		JFormattedTextField horaEntradaFormattedTextField = new JFormattedTextField();
+		horaEntradaFormattedTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char c = e.getKeyChar();
+
+				if (!Character.isDigit(c)) {
+					e.consume();
+				}
+			}
+		});
+		horaEntradaFormattedTextField.setFont(new Font("DejaVu Sans", Font.PLAIN, 14));
+		horaEntradaFormattedTextField.setBounds(385, 31, 104, 27);
+		layeredPane.add(horaEntradaFormattedTextField);
+
+		JFormattedTextField horaSaidaFormattedTextField = new JFormattedTextField();
+		horaSaidaFormattedTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char c = e.getKeyChar();
+
+				if (!Character.isDigit(c)) {
+					e.consume();
+				}
+			}
+		});
+		horaSaidaFormattedTextField.setFont(new Font("DejaVu Sans", Font.PLAIN, 14));
+		horaSaidaFormattedTextField.setBounds(511, 31, 104, 27);
+		layeredPane.add(horaSaidaFormattedTextField);
 		dataTable.getColumnModel().getColumn(0).setPreferredWidth(105);
 		dataTable.getColumnModel().getColumn(1).setPreferredWidth(98);
-		
+
 		loadInitialData();
 	}
-	
+
 	public void loadInitialData() throws ClassNotFoundException, SQLException {
 		DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
-		tableModel.setRowCount(0); 
+		tableModel.setRowCount(0);
 
 		CarroDaoImpl carroDao = new CarroDaoImpl();
 		List<Carro> carros = carroDao.getAllCarros();
