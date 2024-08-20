@@ -29,6 +29,8 @@ import javax.swing.table.DefaultTableModel;
 
 import impl.CarroDaoImpl;
 import model.Carro;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class App {
 
@@ -159,6 +161,10 @@ public class App {
 					} catch (ClassNotFoundException | SQLException e1) {
 						e1.printStackTrace();
 					}
+				} else {
+					JOptionPane.showMessageDialog(frmControleDeEstacionamento,
+							"Nenhum veículo para exclusão foi selecionado", "Mensagem de aviso", JOptionPane.INFORMATION_MESSAGE);
+
 				}
 			}
 		});
@@ -231,6 +237,22 @@ public class App {
 		horaSaidaFormattedTextField.setBounds(511, 31, 104, 27);
 		layeredPane.add(horaSaidaFormattedTextField);
 
+		JButton limpartBtnNewButton = new JButton("Limpar");
+		limpartBtnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				marcaFormattedTextField.setText("");
+				placaFormattedTextField.setText("");
+				corFormattedTextField.setText("");
+				horaEntradaFormattedTextField.setText("");
+				horaSaidaFormattedTextField.setText("");
+				
+				placaFormattedTextField.setEnabled(true);
+			}
+		});
+		limpartBtnNewButton.setToolTipText("Excluir um veículo");
+		limpartBtnNewButton.setBounds(1141, 78, 117, 25);
+		layeredPane.add(limpartBtnNewButton);
+
 		// Insert new vehicle event
 		adicionarBtnNewButton.addActionListener(new ActionListener() {
 			@Override
@@ -243,8 +265,8 @@ public class App {
 				String horaSaidaText = horaSaidaFormattedTextField.getText();
 
 				if (marcaText != null && !marcaText.trim().isEmpty() && placaText != null && !placaText.trim().isEmpty()
-						&& corText != null && !corText.trim().isEmpty() && horaEntradaText != null
-						&& !horaEntradaText.trim().isEmpty()) {
+						&& marcaText.length() != 7 && corText != null && !corText.trim().isEmpty()
+						&& horaEntradaText != null && !horaEntradaText.trim().isEmpty()) {
 
 					if (horaSaidaText == null || horaSaidaText.trim().isEmpty()) {
 						horaSaidaFormattedTextField.setText("0");
@@ -288,10 +310,108 @@ public class App {
 			}
 		});
 
+		dataTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (dataTable.getSelectedRow() != -1) {
+					try {
+						int selectedRow = dataTable.getSelectedRow();
+
+						Carro carro = new Carro();
+						CarroDaoImpl carroDao = new CarroDaoImpl();
+
+						String placa = (String) dataTable.getValueAt(selectedRow, 3);
+						carro.setPlaca(placa);
+
+						Carro carFromDb = carroDao.getCarro(placa);
+
+						marcaFormattedTextField.setText(carFromDb.getMarca());
+						placaFormattedTextField.setText(carFromDb.getPlaca());
+
+						// Regra de negócio: não pode-se atualizar a placa.
+						// O correto é apagar o registro e
+						placaFormattedTextField.setEnabled(false);
+
+						corFormattedTextField.setText(carFromDb.getCor());
+						horaEntradaFormattedTextField.setText(String.valueOf(carFromDb.getHoraEntrada()));
+						horaSaidaFormattedTextField.setText(String.valueOf(carFromDb.getHoraSaida()));
+
+					} catch (ClassNotFoundException ex) {
+						JOptionPane.showMessageDialog(null, "Classe não encontrada: " + ex.getMessage(), "Erro",
+								JOptionPane.ERROR_MESSAGE);
+					} catch (SQLException ex) {
+						JOptionPane.showMessageDialog(null, "Erro de SQL: " + ex.getMessage(), "Erro",
+								JOptionPane.ERROR_MESSAGE);
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Erro ao carregar dados do carro: " + ex.getMessage(),
+								"Erro", JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Nenhum carro selecionado. Selecione um carro na tabela.",
+							"Aviso", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
+
+		atualizarBtnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String marcaText = marcaFormattedTextField.getText();
+				String placaText = placaFormattedTextField.getText();
+				String corText = corFormattedTextField.getText();
+				String horaEntradaText = horaEntradaFormattedTextField.getText();
+				String horaSaidaText = horaSaidaFormattedTextField.getText();
+
+				if (marcaText != null && !marcaText.trim().isEmpty() && placaText != null && !placaText.trim().isEmpty()
+						&& marcaText.length() != 7 && corText != null && !corText.trim().isEmpty()
+						&& horaEntradaText != null && !horaEntradaText.trim().isEmpty()) {
+
+					if (horaSaidaText == null || horaSaidaText.trim().isEmpty()) {
+						horaSaidaFormattedTextField.setText("0");
+						horaSaidaText = "0";
+					}
+					try {
+						int horaEntrada = Integer.parseInt(horaEntradaText);
+						int horaSaida = Integer.parseInt(horaSaidaText);
+
+						Carro carro = new Carro();
+						CarroDaoImpl carroDao = new CarroDaoImpl();
+
+						carro.setMarca(marcaText);
+						carro.setPlaca(placaText);
+						carro.setCor(corText);
+						carro.setHoraEntrada(horaEntrada);
+						carro.setHoraSaida(horaSaida);
+
+						carroDao.updateCarro(carro);
+
+						JOptionPane.showMessageDialog(frmControleDeEstacionamento, "Carro atualizado com êxito!",
+								"Mensagem de aviso", JOptionPane.INFORMATION_MESSAGE);
+
+						loadInitialData();
+
+						marcaFormattedTextField.setText("");
+						placaFormattedTextField.setText("");
+						corFormattedTextField.setText("");
+						horaEntradaFormattedTextField.setText("");
+						horaSaidaFormattedTextField.setText("");
+
+					} catch (ClassNotFoundException | SQLException ex) {
+						JOptionPane.showMessageDialog(frmControleDeEstacionamento, "Erro ao atualizar carro!",
+								"Mensagem de erro", JOptionPane.ERROR_MESSAGE);
+						ex.printStackTrace();
+					}
+				} else {
+					JOptionPane.showMessageDialog(frmControleDeEstacionamento, "Campo vazio detectado!",
+							"Mensagem de erro", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
+
 		dataTable.getColumnModel().getColumn(0).setPreferredWidth(105);
 		dataTable.getColumnModel().getColumn(1).setPreferredWidth(98);
 
 		loadInitialData();
+
 	}
 
 	public void loadInitialData() {
