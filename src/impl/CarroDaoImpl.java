@@ -52,8 +52,9 @@ public class CarroDaoImpl implements CarroDao {
 			ResultSet resultSet = preparedStatement.executeQuery();
 
 			if (resultSet.next()) {
-				carro.setId(resultSet.getInt("id"));
+				carro.setId(resultSet.getInt("Id"));
 				carro.setMarca(resultSet.getString("Marca"));
+				carro.setPlaca(resultSet.getString("Placa"));
 				carro.setCor(resultSet.getString("Cor"));
 				carro.setHoraEntrada(resultSet.getInt("HoraEntrada"));
 				carro.setHoraSaida(resultSet.getInt("HoraSaida"));
@@ -70,11 +71,12 @@ public class CarroDaoImpl implements CarroDao {
 	public void updateCarro(Carro carro) {
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(
-					"UPDATE [Carros] SET [Marca] = ?, [Placa]= ?, [Cor] = ?, [HoraEntrada] = ?, [HoraSaida] = ? WHERE [Placa] = ?");
+					"UPDATE Carros SET Marca = ?, Cor = ?, HoraEntrada = ?, HoraSaida = ? WHERE Placa = ?");
 			preparedStatement.setString(1, carro.getMarca());
 			preparedStatement.setString(2, carro.getCor());
 			preparedStatement.setInt(3, carro.getHoraEntrada());
 			preparedStatement.setInt(4, carro.getHoraSaida());
+			preparedStatement.setString(5, carro.getPlaca());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -86,6 +88,23 @@ public class CarroDaoImpl implements CarroDao {
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement("DELETE FROM Carros WHERE Placa = ?");
 			preparedStatement.setString(1, carro.getPlaca());
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void createCarro(Carro carro) {
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement(
+					"INSERT INTO Carros (Marca, Placa, Cor, HoraEntrada, HoraSaida) VALUES(?, ?, ?, ?, ?)");
+			preparedStatement.setString(1, carro.getMarca());
+			preparedStatement.setString(2, carro.getPlaca());
+			preparedStatement.setString(3, carro.getCor());
+			preparedStatement.setInt(4, carro.getHoraEntrada());
+			preparedStatement.setInt(5, carro.getHoraSaida());
 			preparedStatement.executeUpdate();
 
 		} catch (SQLException e) {

@@ -6,9 +6,12 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -26,8 +29,6 @@ import javax.swing.table.DefaultTableModel;
 
 import impl.CarroDaoImpl;
 import model.Carro;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class App {
 
@@ -140,6 +141,7 @@ public class App {
 
 		JButton excluirBtnNewButton = new JButton("Excluir");
 		excluirBtnNewButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (dataTable.getSelectedRow() != -1) {
 					try {
@@ -175,12 +177,21 @@ public class App {
 				new String[] { "Id", "Marca", "Cor", "Placa", "Hora Entrada", "Hora Saída" }));
 
 		JFormattedTextField marcaFormattedTextField = new JFormattedTextField();
-
 		marcaFormattedTextField.setFont(new Font("DejaVu Sans", Font.PLAIN, 14));
 		marcaFormattedTextField.setBounds(12, 31, 104, 27);
 		layeredPane.add(marcaFormattedTextField);
 
 		JFormattedTextField placaFormattedTextField = new JFormattedTextField();
+		placaFormattedTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char c = e.getKeyChar();
+
+				if (Character.isLetter(c)) {
+					e.setKeyChar(Character.toUpperCase(c));
+				}
+			}
+		});
 		placaFormattedTextField.setFont(new Font("DejaVu Sans", Font.PLAIN, 14));
 		placaFormattedTextField.setBounds(138, 31, 104, 27);
 		layeredPane.add(placaFormattedTextField);
@@ -219,6 +230,64 @@ public class App {
 		horaSaidaFormattedTextField.setFont(new Font("DejaVu Sans", Font.PLAIN, 14));
 		horaSaidaFormattedTextField.setBounds(511, 31, 104, 27);
 		layeredPane.add(horaSaidaFormattedTextField);
+
+		// Insert new vehicle event
+		adicionarBtnNewButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				String marcaText = marcaFormattedTextField.getText();
+				String placaText = placaFormattedTextField.getText();
+				String corText = corFormattedTextField.getText();
+				String horaEntradaText = horaEntradaFormattedTextField.getText();
+				String horaSaidaText = horaSaidaFormattedTextField.getText();
+
+				if (marcaText != null && !marcaText.trim().isEmpty() && placaText != null && !placaText.trim().isEmpty()
+						&& corText != null && !corText.trim().isEmpty() && horaEntradaText != null
+						&& !horaEntradaText.trim().isEmpty()) {
+
+					if (horaSaidaText == null || horaSaidaText.trim().isEmpty()) {
+						horaSaidaFormattedTextField.setText("0");
+						horaSaidaText = "0";
+					}
+					try {
+						int horaEntrada = Integer.parseInt(horaEntradaText);
+						int horaSaida = Integer.parseInt(horaSaidaText);
+
+						Carro carro = new Carro();
+						CarroDaoImpl carroDao = new CarroDaoImpl();
+
+						carro.setMarca(marcaText);
+						carro.setPlaca(placaText);
+						carro.setCor(corText);
+						carro.setHoraEntrada(horaEntrada);
+						carro.setHoraSaida(horaSaida);
+
+						carroDao.createCarro(carro);
+
+						JOptionPane.showMessageDialog(frmControleDeEstacionamento, "Novo carro adicionado com êxito!",
+								"Mensagem de aviso", JOptionPane.INFORMATION_MESSAGE);
+
+						loadInitialData();
+
+						marcaFormattedTextField.setText("");
+						placaFormattedTextField.setText("");
+						corFormattedTextField.setText("");
+						horaEntradaFormattedTextField.setText("");
+						horaSaidaFormattedTextField.setText("");
+
+					} catch (ClassNotFoundException | SQLException ex) {
+						JOptionPane.showMessageDialog(frmControleDeEstacionamento, "Erro ao adicionar o carro!",
+								"Mensagem de erro", JOptionPane.ERROR_MESSAGE);
+						ex.printStackTrace();
+					}
+				} else {
+					JOptionPane.showMessageDialog(frmControleDeEstacionamento, "Campo vazio detectado!",
+							"Mensagem de erro", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
+
 		dataTable.getColumnModel().getColumn(0).setPreferredWidth(105);
 		dataTable.getColumnModel().getColumn(1).setPreferredWidth(98);
 
@@ -234,15 +303,19 @@ public class App {
 				CarroDaoImpl carroDao = new CarroDaoImpl();
 				List<Carro> carros = carroDao.getAllCarros();
 
+				carros.sort(Comparator.comparing(Carro::getId).reversed());
+
 				for (Carro carro : carros) {
 					Object[] rowData = { carro.getId(), carro.getMarca(), carro.getCor(), carro.getPlaca(),
 							carro.getHoraEntrada(), carro.getHoraSaida() };
 					tableModel.addRow(rowData);
 				}
+
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(frmControleDeEstacionamento, "Algo de errado ocorreu!",
 						"Mensagem de erro", JOptionPane.ERROR_MESSAGE);
 			}
+
 		});
 
 		t1.start();
