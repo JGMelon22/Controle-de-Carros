@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
@@ -29,8 +31,6 @@ import javax.swing.table.DefaultTableModel;
 
 import impl.CarroDaoImpl;
 import model.Carro;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class App {
 
@@ -163,7 +163,8 @@ public class App {
 					}
 				} else {
 					JOptionPane.showMessageDialog(frmControleDeEstacionamento,
-							"Nenhum veículo para exclusão foi selecionado", "Mensagem de aviso", JOptionPane.INFORMATION_MESSAGE);
+							"Nenhum veículo para exclusão foi selecionado", "Mensagem de aviso",
+							JOptionPane.INFORMATION_MESSAGE);
 
 				}
 			}
@@ -239,13 +240,14 @@ public class App {
 
 		JButton limpartBtnNewButton = new JButton("Limpar");
 		limpartBtnNewButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				marcaFormattedTextField.setText("");
 				placaFormattedTextField.setText("");
 				corFormattedTextField.setText("");
 				horaEntradaFormattedTextField.setText("");
 				horaSaidaFormattedTextField.setText("");
-				
+
 				placaFormattedTextField.setEnabled(true);
 			}
 		});
@@ -354,6 +356,7 @@ public class App {
 		});
 
 		atualizarBtnNewButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				String marcaText = marcaFormattedTextField.getText();
 				String placaText = placaFormattedTextField.getText();
