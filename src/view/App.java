@@ -179,6 +179,7 @@ public class App {
 		layeredPane.add(scrollPane);
 
 		dataTable = new JTable();
+		dataTable.setAutoCreateRowSorter(true);
 		scrollPane.setViewportView(dataTable);
 		dataTable.setModel(new DefaultTableModel(new Object[][] {},
 				new String[] { "Id", "Marca", "Cor", "Placa", "Hora Entrada", "Hora Saída" }));
@@ -247,7 +248,9 @@ public class App {
 				corFormattedTextField.setText("");
 				horaEntradaFormattedTextField.setText("");
 				horaSaidaFormattedTextField.setText("");
-
+				
+				dataTable.clearSelection();
+				
 				placaFormattedTextField.setEnabled(true);
 			}
 		});
