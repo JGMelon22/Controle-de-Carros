@@ -17,10 +17,12 @@ Crie um banco de dados Access para armazenamento dos carros do estacionamento de
 
 ### Prints de exeução
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/user-attachments/assets/74c3fd9a-add4-4657-bdef-48374e825027" style="height: 400px; width: 600px object-fit: contain;">
+    <img alt="main-menu" src="https://github.com/user-attachments/assets/49cdcc6e-724f-46f7-8378-b205233126dc" style="height: 400px; width: 600px object-fit: contain;">
 </div>
 
 <h3>Stack and Tools</h3>
 - Java 17 <br/>
 - Eclipse IDE <br/>
+
 - <a href="https://sourceforge.net/projects/ucanaccess/">UCanAccess</a> 
+
