@@ -240,6 +240,7 @@ public class App {
 		layeredPane.add(horaSaidaFormattedTextField);
 
 		JButton limpartBtnNewButton = new JButton("Limpar");
+		limpartBtnNewButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		limpartBtnNewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -248,9 +249,9 @@ public class App {
 				corFormattedTextField.setText("");
 				horaEntradaFormattedTextField.setText("");
 				horaSaidaFormattedTextField.setText("");
-				
+
 				dataTable.clearSelection();
-				
+
 				placaFormattedTextField.setEnabled(true);
 			}
 		});
