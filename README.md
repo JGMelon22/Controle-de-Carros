@@ -15,7 +15,7 @@ Crie um banco de dados Access para armazenamento dos carros do estacionamento de
 - Certifique-se de incluir o arquivo do banco de dados (Parkinglot.mdb) no mesmo diretório do projeto;
 - Execute pelo Eclipse IDE!
 
-### Prints de exeução
+### Prints de execução
 <div style="display: flex; gap: 10px;">
     <img alt="main-menu" src="https://github.com/user-attachments/assets/49cdcc6e-724f-46f7-8378-b205233126dc" style="height: 400px; width: 600px object-fit: contain;">
 </div>
